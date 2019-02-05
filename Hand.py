@@ -126,19 +126,20 @@ class Hand:
 
 	def runUntill(self,limitSwitchPos):
 		#private methode
+
+		#class all event
+		GPIO.remove_event_detect(self.LMUP)
+		GPIO.remove_event_detect(self.LMDOWN)
+                GPIO.remove_event_detect(self.LMCENTER)
+
+		#fire only disired event
 		if limitSwitchPos == self.LMUP:
-			GPIO.remove_event_detect(self.LMDOWN)
-                        GPIO.remove_event_detect(self.LMCENTER)
                         GPIO.add_event_detect(self.LMUP,GPIO.FALLING,callback=self.stopAndClear,bouncetime=300)
 
 		elif limitSwitchPos == self.LMDOWN:
-			GPIO.remove_event_detect(self.LMUP)
-                        GPIO.remove_event_detect(self.LMCENTER)
                         GPIO.add_event_detect(self.LMDOWN,GPIO.FALLING,callback=self.stopAndClear,bouncetime=300)
 
 		elif limitSwitchPos == self.LMCENTER:
-			GPIO.remove_event_detect(self.LMDOWN)
-	                GPIO.remove_event_detect(self.LMUP)
         	        GPIO.add_event_detect(self.LMCENTER,GPIO.FALLING,callback=self.stopAndClear,bouncetime=300)
 
 		else :
