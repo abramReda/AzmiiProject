@@ -51,11 +51,13 @@ class Hand:
 		if self.virtualPosition == UP:
 			return
 
-		else:
-			while self.getCurrentPosition() != UP:
+		else : #run motor until up position
+			if self.getCurrentPosition() != UP:
 				self.motor.forward()
+				GPIO.remove_event_detect(self.LMDOWN)
+				GPIO.remove_event_detect(self.LMCENTER)
+				GPIO.add_event_detect(self.LMUP,GPIO.FALLING,callback=self.stopAndClear,bouncetime=300)
 
-		self.motor.stop()          #satop motor after finishing
 		self.virtualPosition = UP  #update virtial position
 
 
@@ -63,9 +65,12 @@ class Hand:
 		if self.virtualPosition == DOWN:
                         return
                 else:
-                        while self.getCurrentPosition() != DOWN:
+                        if self.getCurrentPosition() != DOWN:
                                 self.motor.backward()
-		self.motor.stop()          #satop motor after finishing
+				GPIO.remove_event_detect(self.LMUP)
+                                GPIO.remove_event_detect(self.LMCENTER)
+				GPIO.add_event_detect(self.LMDOWN,GPIO.FALLING,callback=self.stopAndClear,bouncetime=300)
+
                	self.virtualPosition = DOWN  #update virtial position
 
 
@@ -74,17 +79,18 @@ class Hand:
 		if self.virtualPosition  == CENTER:
                         return
                 elif self.virtualPosition == UP:
-                        while self.getCurrentPosition() != CENTER:
+                        if self.getCurrentPosition() != CENTER:
                                 self.motor.backward()
 		elif self.virtualPosition == DOWN:
-                        while self.getCurrentPosition() != CENTER:
+                        if self.getCurrentPosition() != CENTER:
                                 self.motor.forward()
 		else:   #for floating position
-			while self.getCurrentPosition() != CENTER:
+			if self.getCurrentPosition() != CENTER:
                                 self.motor.forward()
+		GPIO.remove_event_detect(self.LMDOWN)
+                GPIO.remove_event_detect(self.LMUP)
 
-
-		self.motor.stop()               #satop motor after finishing
+		GPIO.add_event_detect(self.LMCENTER,GPIO.FALLING,callback=self.stopAndClear,bouncetime=300)
                 self.virtualPosition = CENTER   #update virtial position
 
 
@@ -100,3 +106,7 @@ class Hand:
                 if  not GPIO.input(self.LMDOWN):
                     return DOWN
 		return FLOATING
+
+	def stopAndClear(self,channal):
+		self.motor.stop()
+		GPIO.remove_event_detect(channal)
