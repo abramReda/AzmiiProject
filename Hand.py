@@ -1,4 +1,22 @@
 
+        ##########################################################################################################################################
+        # Discription                                                                                                                            #
+        #               this software is part from Azmii project,this  class is to control Hand in three position  UP/down/center       	 #
+        #               our Hardwear configration for hand is one DC motor with three limit switch to locate the Hand Position                   #
+	#		the motor is parment magnet DC with a geerBox and it will controll via our simple motor class  				 #
+	#		the three limit switch are configer whene it pressed give zero volte and when it release it give 5 volt			 #
+        ##########################################################################################################################################
+        # Paremters:                                                                                                                             #
+	#		LMUP , LMCENTER , LMDOWN >> are the three  Phisical PIN in GPIO that the limit switch conected to it			 #
+	#		motorPin1 , MotorPin2 >> are the phisical  PINs wich control the motor dirction Where: 					 #
+        #              		 Pin1 >> the 1st phisical bin conect to the 1st base of transestor wich actve the 1st relay                      #
+        #              		 pin2 >> the 2nd phisical bin conect to the 2nd base of transestor wich actve the 2nd relay           		 #
+        ##########################################################################################################################################
+        # auther                                                                                                                                 #
+        #               Eng:Ibram Reda                                                                                                           #
+        ##########################################################################################################################################
+
+
 
 
 import RPi.GPIO as GPIO
@@ -28,7 +46,9 @@ class Hand:
 
 		#inintal position of hand well be center
 		self.virtualPosition = self.getCurrentPosition()
+		self.lastPosition    = self.getCurrentPosition()
 		self.center()
+
 
 
 
@@ -128,6 +148,15 @@ class Hand:
 		#private method
 		self.motor.stop()
 		GPIO.remove_event_detect(channal)
+		#UPDATE THE LAST POSITION TO ARM
+		if channal == self.LMUP:
+			self.lastPosition = UP
+		elif channal == self.LMDOWN:
+                        self.lastPosition = DOWN
+		elif channal == self.LMCENTER:
+                        self.lastPosition = CENTER
+
+
 
 	def calibration(self):
 		# dueto our system has no selfLock system , we make calibration
