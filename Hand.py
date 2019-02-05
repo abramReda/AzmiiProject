@@ -18,7 +18,7 @@
 
 
 
-
+import time
 import RPi.GPIO as GPIO
 import motor
 
@@ -97,7 +97,7 @@ class Hand:
 		elif self.virtualPosition == DOWN:
                         if self.getCurrentPosition() != CENTER:
                                 self.motor.forward()
-		else:   #for floating position
+		else:   #for viritual floating position!!
 			if self.getCurrentPosition() != CENTER:
                                 self.motor.forward()
 		self.runUntill(self.LMCENTER)
@@ -107,7 +107,7 @@ class Hand:
 
 
 	def getCurrentPosition(self):
-		#this method will return where which Limit switch is pressed
+		#this method will return  which Limit switch is pressed
 		#note that limitSwitch is active low pin
 	        if  not GPIO.input(self.LMUP):
                     return UP
@@ -176,3 +176,70 @@ class Hand:
                                 self.runUntill(self.LMDOWN)
 			else :
 				pass # TO DO : must throw error virtualPosition do't initalized , it must tack value in [1,2,3] 
+
+
+
+	def testHardwearConection(self):
+
+		#clear event to don't desterp the function untill finshing
+		GPIO.remove_event_detect(self.LMUP)
+		GPIO.remove_event_detect(self.LMDOWN)
+                GPIO.remove_event_detect(self.LMCENTER)
+		#tun the motor in forward
+		self.motor.forward()
+		#declare the variable which indicat if lmSwitch conected or not
+		LmUpConected=False
+		LmDownConected=False
+		LmCenterConected=False
+		#declar status massage
+		statusMSG ='########################################\n'
+
+		startTime = time.time()
+		endTime =startTime+20 # this func should finised befor 20 sec
+
+
+		#run in wile loop to make 360 degree by motor or 20 sec  is finished
+		while True:
+			location =self.getCurrentPosition()
+
+			if location == UP:
+				statusMSG += 'limet switch   UP   conected successfly\n'
+				if LmUpConected:
+					break
+				LmUpConected=True
+				time.sleep(1)
+
+			if location == DOWN:
+				statusMSG += 'limet switch  down  conected successfly\n'
+				if LmDownConected:
+                                        break
+                                LmDownConected=True
+                                time.sleep(1)
+
+			if location == CENTER:
+				statusMSG += 'limet switch center conected successfly\n'
+				if LmCenterConected:
+                                        break
+                                LmCenterConected=True
+                                time.sleep(1)
+
+			if LmUpConected and LmDownConected and LmCenterConected:
+				statusMSG += 'all conected successfly :)\n'
+				break
+
+			if endTime < time.time():
+				statusMSG += 'Time out without :(\n>> maybe motor is disconect\n'
+				break
+
+		if not LmDownConected:
+			statusMSG += '>> maybe limit switch  down  is not conected :(\n'
+		if not LmUpConected:
+                        statusMSG += '>> maybe limit switch   up   is not conected :(\n'
+		if not LmCenterConected:
+                        statusMSG += '>> maybe limit switch center is not conected :(\n'
+
+
+		statusMSG +='########################################\n'
+		self.setPosition(DOWN)  #to return in aspacific location
+		return statusMSG
+
