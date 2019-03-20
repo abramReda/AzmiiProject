@@ -182,6 +182,20 @@ class Hand:
 
 	def testHardwearConection(self):
 
+		#Note that :this fuction will make the robot stuck unstill finshed
+
+		#this function objective is to confirme that the hardware connected and evry thing is blugin to right place
+		#in simple word we need to test if the three limit switch and motor pins  are conected and in right place as  in sowftwer
+
+		#to test connection
+		#we just run the motor in forowerd diriction and
+		#if the three limit switch are presid then the haconected sucessfully
+		#after one revlution if one or more switch are  not pressed that indecat the falier in ware conection
+		#if time is acceed 40 sec and motor dosnote one revelnsider that also Hardwaer falier
+
+		#to test connected to right place and no pin are exchanged
+		#this not implementedc yet TO DO
+
 		#clear event to don't desterp the function untill finshing
 		GPIO.remove_event_detect(self.LMUP)
 		GPIO.remove_event_detect(self.LMDOWN)
